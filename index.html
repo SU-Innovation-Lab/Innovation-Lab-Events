@@ -61,14 +61,17 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .form small{font-weight:400;color:var(--mut)}
 .form input:not([type=file]){padding:9px 10px;border:1px solid #666;border-radius:8px;width:100%;background:#000;color:#fff}
 .form input[type=file]{color:var(--mut)}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
 .prev img{max-width:220px;border-radius:8px;display:block;margin-bottom:6px}
 .err{color:#ff6b7d;margin:0;min-height:0}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .admin{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
 .panel h3{margin-top:0}
-.li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.li .row{flex-wrap:nowrap}
+.li .btn{padding:6px 12px}
+.li b{overflow-wrap:anywhere}
 .li div{min-width:0}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:8px;z-index:99;font-weight:600}
 @media(max-width:760px){.hero,.admin{grid-template-columns:1fr}.hero .in{padding:20px}.cell{min-height:70px}.chip{font-size:10px;padding:2px 3px}header{padding:10px 12px}}
