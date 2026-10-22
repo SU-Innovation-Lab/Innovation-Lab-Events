@@ -72,6 +72,15 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .li div{min-width:0}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:8px;z-index:99;font-weight:600}
 @media(max-width:760px){.hero,.admin{grid-template-columns:1fr}.hero .in{padding:20px}.cell{min-height:70px}.chip{font-size:10px;padding:2px 3px}header{padding:10px 12px}}
+.display nav,.display .who,.display .hero .row{display:none}
+.display main{max-width:1760px}
+.display .hero img{max-height:520px;cursor:default}
+.display .hero h2{font-size:clamp(40px,4vw,64px)}
+.display .meta{font-size:26px}
+.display .pill{font-size:20px}
+.display .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.display .card img{height:110px}
+.display h3{font-size:26px}
 </style>
 </head>
 <body>
@@ -93,12 +102,14 @@ const NOTICE="PCB Club meets every Friday, 3:30\u20135:30 PM.";
 const sb=(()=>{try{return supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch{return null}})();
 const $=(s,e=document)=>e.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DISPLAY=new URLSearchParams(location.search).has("display");
+document.body.classList.toggle("display",DISPLAY);
 let EV=[],admin=false,view="up",mon=0,loaded=false,fail="";
 const fromRow=r=>({id:r.id,lead:r.lead,title:r.title,date:r.date,start:r.start_t||"",end:r.end_t||"",timeText:r.time_text||"",location:r.location,flier:r.flier_url||"",path:r.flier_path||""});
 const toRow=o=>({lead:o.lead,title:o.title,date:o.date,start_t:o.start,end_t:o.end,time_text:o.timeText,location:o.location,flier_url:o.flier,flier_path:o.path});
 async function load(){
-  if(!sb)fail="Add your Supabase URL, key and admin email at the top of index.html.";
-  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events. Check the Supabase setup.";else{fail="";EV=data.map(fromRow)}}
+  if(!sb)fail=typeof supabase==="undefined"?"The Supabase library did not load (network or content blocker?).":"Add your Supabase URL, key and admin email at the top of index.html.";
+  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events: "+(error.message||"unknown error");else{fail="";EV=data.map(fromRow)}}
   loaded=true;render()}
 const hue=s=>0;
 const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
@@ -128,8 +139,8 @@ function viewUp(){
   const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),nx=up[0];
   let h=nx?`<section class="hero${nx.flier?"":" noimg"}">${nx.flier?`<img src="${esc(nx.flier)}" alt="Flier for ${esc(nx.title)}" data-open="${nx.id}">`:""}<div class="in"><span class="pill">Up next · ${lbl(nx)}</span><h2>${esc(nx.title)}</h2>${tag(nx)}<div class="meta"><div>${fmtD(nx)}</div><div>${esc(timeStr(nx))}</div><div>${esc(nx.location)}</div></div><div class="row"><button class="btn pri" data-open="${nx.id}">View details</button></div></div></section>`
    :`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
-  if(up.length>1)h+=`<h3>Coming up</h3><div class="grid">${up.slice(1).map(card).join("")}</div>`;
-  if(past.length)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
+  if(up.length>1)h+=`<h3>Coming up</h3><div class="grid">${up.slice(1,DISPLAY?5:undefined).map(card).join("")}</div>`;
+  if(past.length&&!DISPLAY)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
   return h}
 function viewCal(){
   const mo=9+mon,first=new Date(2026,mo,1),dim=new Date(2026,mo+1,0).getDate(),ev=sorted(),t=iso(new Date());
@@ -202,6 +213,7 @@ document.addEventListener("click",async ev=>{
   else if(m){mon=+m.dataset.m;render()}
   else if(v){view=v.dataset.v;render()}});
 
+window.addEventListener("error",e=>{fail="Page error: "+e.message;if(loaded)render()});
 render();
 (async()=>{if(sb){const{data}=await sb.auth.getSession();admin=!!(data&&data.session)}await load()})();
 setInterval(()=>{if(!dlg.open&&view!=="admin")load()},60000);
