@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Innovation Lab · Fall 2026 Events</title>
+<style>
+:root{--ink:#fff;--mut:#b5b5b5;--bg:#000;--panel:#121212;--line:#2c2c2c;--red:#c8102e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+button,input{font:inherit}
+header{background:#000;color:#fff;display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap;border-bottom:3px solid var(--red)}
+header h1{font-size:18px;margin:0;font-weight:700}
+nav{display:flex;gap:4px;flex:1}
+nav button{background:none;border:0;color:#c9c9c9;padding:8px 14px;border-radius:8px;cursor:pointer}
+nav button.on{background:#fff;color:#000;font-weight:600}
+.who{display:flex;gap:10px;align-items:center;font-size:14px}
+.btn{border:1px solid #444;background:#1a1a1a;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn.pri{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+header .btn{background:transparent;border-color:#666}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+main{max-width:1100px;margin:0 auto;padding:20px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin-bottom:16px;color:var(--mut);font-size:14px}
+.draft{background:#2a0a10;border-color:var(--red);color:#fff;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:0;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:14px;overflow:hidden;margin-bottom:28px}
+.hero.noimg{grid-template-columns:1fr}
+.hero img{width:100%;height:100%;max-height:640px;object-fit:contain;background:#000;display:block;cursor:zoom-in}
+.hero .in{padding:32px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.pill{align-self:flex-start;background:var(--red);color:#fff;border-radius:99px;padding:3px 12px;font-size:14px;font-weight:600}
+.hero h2{font-size:clamp(28px,5vw,46px);line-height:1.1;margin:4px 0;font-weight:800}
+.meta{display:grid;gap:4px;font-size:18px}
+.meta span{color:var(--mut)}
+h3{margin:28px 0 12px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{all:unset;box-sizing:border-box;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;color:#fff}
+.card:hover{border-color:var(--red)}
+.card:focus-visible{outline:3px solid #fff}
+.card img{width:100%;height:150px;object-fit:cover}
+.card .t{padding:12px 14px;display:grid;gap:2px}
+.card b{font-size:17px}
+.card small,.sub{color:var(--mut)}
+.past .card{opacity:.7}
+.tag{display:inline-block;padding:1px 9px;border-radius:6px;font-size:13px;font-weight:600;background:#fff;color:#000;justify-self:start;align-self:flex-start}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .dow{font-weight:600;color:var(--mut);padding:4px;font-size:14px}
+.cell{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:104px;padding:4px;display:flex;flex-direction:column;gap:3px}
+.cell.off{background:transparent;border-color:transparent}
+.cell.today{border:2px solid var(--red)}
+.cell>b{font-size:13px;color:var(--mut)}
+.chip{all:unset;box-sizing:border-box;cursor:pointer;font-size:12px;line-height:1.25;padding:3px 6px;border-radius:5px;background:var(--red);color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip:hover{background:#fff;color:#000}
+.chip:focus-visible{outline:3px solid #fff}
+.months{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.months .btn.on{background:var(--red);border-color:var(--red);color:#fff}
+dialog{border:1px solid #444;border-top:4px solid var(--red);border-radius:14px;padding:0;width:min(560px,94vw);max-height:92vh;background:var(--panel);color:#fff}
+dialog::backdrop{background:rgba(0,0,0,.75)}
+.dlg{padding:22px;display:grid;gap:10px}
+.dlg img{width:100%;max-height:60vh;object-fit:contain;background:#000;border-radius:8px}
+.form{display:grid;gap:10px}
+.form label{display:grid;gap:3px;font-weight:600;font-size:14px}
+.form small{font-weight:400;color:var(--mut)}
+.form input:not([type=file]){padding:9px 10px;border:1px solid #666;border-radius:8px;width:100%;background:#000;color:#fff}
+.form input[type=file]{color:var(--mut)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.prev img{max-width:220px;border-radius:8px;display:block;margin-bottom:6px}
+.err{color:#ff6b7d;margin:0;min-height:0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.admin{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.panel h3{margin-top:0}
+.li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.li div{min-width:0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:8px;z-index:99;font-weight:600}
+@media(max-width:760px){.hero,.admin{grid-template-columns:1fr}.hero .in{padding:20px}.cell{min-height:70px}.chip{font-size:10px;padding:2px 3px}header{padding:10px 12px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Innovation Lab · Fall 2026</h1>
+  <nav id="nav"></nav>
+  <div class="who" id="who"></div>
+</header>
+<main id="app"></main>
+<dialog id="dlg"></dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* ---- SETUP: paste your three values from Supabase here ---- */
+const SUPABASE_URL="https://rvfgvogeupgovxtamyhm.supabase.co";
+const SUPABASE_KEY="sb_publishable_8IaaV4SuFmevSrRDlDqSSQ_i2gB8CkL";
+const ADMIN_EMAIL="FernandG@seattleu.edu";
+const NOTICE="PCB Club meets every Friday, 3:30\u20135:30 PM.";
+/* ------------------------------------------------------------ */
+const sb=(()=>{try{return supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch{return null}})();
+const $=(s,e=document)=>e.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let EV=[],admin=false,view="up",mon=0,loaded=false,fail="";
+const fromRow=r=>({id:r.id,lead:r.lead,title:r.title,date:r.date,start:r.start_t||"",end:r.end_t||"",timeText:r.time_text||"",location:r.location,flier:r.flier_url||"",path:r.flier_path||""});
+const toRow=o=>({lead:o.lead,title:o.title,date:o.date,start_t:o.start,end_t:o.end,time_text:o.timeText,location:o.location,flier_url:o.flier,flier_path:o.path});
+async function load(){
+  if(!sb)fail="Add your Supabase URL, key and admin email at the top of index.html.";
+  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events. Check the Supabase setup.";else{fail="";EV=data.map(fromRow)}}
+  loaded=true;render()}
+const hue=s=>0;
+const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
+const timeStr=e=>e.timeText||(e.start?fmtT(e.start)+(e.end?" \u2013 "+fmtT(e.end):""):"TBD");
+const fmtD=e=>new Date(e.date+"T00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const st=e=>new Date(e.date+"T"+(e.start||"00:00"));
+const en=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
+const sorted=()=>[...EV].sort((a,b)=>(a.date+(a.start||"99")).localeCompare(b.date+(b.start||"99")));
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function lbl(e){const n=new Date();if(st(e)<=n&&n<=en(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
+const toast=m=>{const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2600)};
+const tag=e=>`<span class="tag">${esc(e.lead)}</span>`;
+const card=e=>`<button class="card" data-open="${e.id}">${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}<span class="t">${tag(e)}<b>${esc(e.title)}</b><small>${fmtD(e)} · ${esc(timeStr(e))}</small><small>${esc(e.location)}</small></span></button>`;
+
+async function upload(du){const b=await(await fetch(du)).blob(),p=crypto.randomUUID()+".jpg";
+  const{error}=await sb.storage.from("fliers").upload(p,b,{contentType:"image/jpeg"});if(error)throw error;
+  return{url:sb.storage.from("fliers").getPublicUrl(p).data.publicUrl,path:p}}
+const rmFile=p=>p&&sb.storage.from("fliers").remove([p]);
+async function saveEv(o,old){
+  if(o.flier.startsWith("data:")){const u=await upload(o.flier);o.flier=u.url;o.path=u.path}
+  const r=toRow(o),{error}=await(o.id?sb.from("events").update(r).eq("id",o.id):sb.from("events").insert(r));
+  if(error)throw error;
+  if(old&&old.path&&old.path!==o.path)rmFile(old.path);
+  await load()}
+
+function viewUp(){
+  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),nx=up[0];
+  let h=nx?`<section class="hero${nx.flier?"":" noimg"}">${nx.flier?`<img src="${esc(nx.flier)}" alt="Flier for ${esc(nx.title)}" data-open="${nx.id}">`:""}<div class="in"><span class="pill">Up next · ${lbl(nx)}</span><h2>${esc(nx.title)}</h2>${tag(nx)}<div class="meta"><div>${fmtD(nx)}</div><div>${esc(timeStr(nx))}</div><div>${esc(nx.location)}</div></div><div class="row"><button class="btn pri" data-open="${nx.id}">View details</button></div></div></section>`
+   :`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
+  if(up.length>1)h+=`<h3>Coming up</h3><div class="grid">${up.slice(1).map(card).join("")}</div>`;
+  if(past.length)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
+  return h}
+function viewCal(){
+  const mo=9+mon,first=new Date(2026,mo,1),dim=new Date(2026,mo+1,0).getDate(),ev=sorted(),t=iso(new Date());
+  let c=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<first.getDay();i++)c+='<div class="cell off"></div>';
+  for(let d=1;d<=dim;d++){const k=iso(new Date(2026,mo,d));
+    c+=`<div class="cell${k===t?" today":""}"><b>${d}</b>${ev.filter(e=>e.date===k).map(e=>`<button class="chip" data-open="${e.id}" title="${esc(e.title)}">${esc(e.title)}</button>`).join("")}</div>`}
+  return`<div class="months"><button class="btn${mon===0?" on":""}" data-m="0">October 2026</button><button class="btn${mon===1?" on":""}" data-m="1">November 2026</button></div><div class="cal">${c}</div>`}
+function viewAdmin(){
+  return`<div class="admin"><div class="panel"><h3>Add an event</h3><div id="addhost"></div></div><div class="panel"><h3>All events</h3>${sorted().map(e=>`<div class="li"><div><b>${esc(e.title)}</b><br><small class="sub">${fmtD(e)} · ${esc(e.lead)}</small></div><div class="row"><button class="btn" data-act="edit" data-id="${e.id}">Edit</button><button class="btn" data-act="del" data-id="${e.id}">Delete</button></div></div>`).join("")}<p class="sub">Changes go live for everyone as soon as you save. Others see them after a refresh.</p></div></div>`}
+function render(){
+  if(!admin&&view==="admin")view="up";
+  $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],...(admin?[["admin","Add event"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
+  $("#who").innerHTML=admin?`<span>Innovation</span><button class="btn" data-act="logout">Log out</button>`:`<button class="btn" data-act="login">Admin login</button>`;
+  const body=!loaded?'<p class="sub">Loading events…</p>':view==="up"?viewUp():view==="cal"?viewCal():viewAdmin();
+  $("#app").innerHTML=(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
+  if(loaded&&view==="admin")$("#addhost").append(buildForm({},async o=>{await saveEv(o);toast("Event added")}))}
+
+const shrink=file=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const s=Math.min(1,1400/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.85))};i.src=r.result};r.readAsDataURL(file)});
+
+function buildForm(e,done){
+  const f=document.createElement("form");f.className="form";let fl=e.flier||"";
+  f.innerHTML=`<label>Lead<input name="lead" required value="${esc(e.lead)}"></label><label>Title<input name="title" required value="${esc(e.title)}"></label>
+  <div class="two"><label>Date<input type="date" name="date" required min="2026-10-01" max="2026-11-30" value="${esc(e.date)}"></label><label>Start time<input type="time" name="start" value="${esc(e.start)}"></label><label>End time <small>(optional)</small><input type="time" name="end" value="${esc(e.end)}"></label></div>
+  <label>Custom time text <small>(optional, e.g. TBD)</small><input name="timeText" value="${esc(e.timeText)}"></label>
+  <label>Location<input name="location" required value="${esc(e.location)}"></label>
+  <label>Flier <small>(optional, PNG or JPG from your phone or computer)</small><input type="file" name="file" accept="image/png,image/jpeg"></label>
+  <div class="prev"></div><p class="err"></p>
+  <div class="row"><button class="btn pri" data-go>${e.id?"Save changes":"Add event"}</button>${e.id?'<button type="button" class="btn" data-close>Cancel</button>':""}</div>`;
+  const err=m=>{$(".err",f).textContent=m},v=n=>f.elements[n].value.trim();
+  const pv=()=>{$(".prev",f).innerHTML=fl?`<img src="${esc(fl)}" alt="Flier preview"><button type="button" class="btn" data-rm>Remove flier</button>`:""};pv();
+  f.addEventListener("click",ev=>{if(ev.target.closest("[data-rm]")){fl="";f.elements.file.value="";pv()}});
+  f.elements.file.onchange=async()=>{const x=f.elements.file.files[0];if(!x)return;try{fl=await shrink(x);err("");pv()}catch{err("Could not read that image. Use a PNG or JPG.")}};
+  f.onsubmit=async ev=>{ev.preventDefault();
+    const o={id:e.id,lead:v("lead"),title:v("title"),date:v("date"),start:v("start"),end:v("end"),timeText:v("timeText"),location:v("location"),flier:fl,path:fl&&!fl.startsWith("data:")?(e.path||""):""};
+    if(!o.start&&!o.timeText)return err("Enter a start time or custom time text.");
+    if(o.start&&o.end&&o.end<=o.start)return err("End time must be after the start time.");
+    const b=$("[data-go]",f),lab=b.textContent;b.disabled=true;b.textContent="Saving…";err("");
+    try{await done(o)}catch(x){err("Could not save: "+(x.message||x));b.disabled=false;b.textContent=lab}};
+  return f}
+
+const dlg=$("#dlg");
+dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.closest("[data-close]"))dlg.close()});
+function showEvent(id){
+  const e=EV.find(x=>x.id===id);if(!e)return;
+  dlg.innerHTML=`<div class="dlg">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}">`:""}<h2 style="margin:0">${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row">${admin?`<button class="btn pri" data-act="edit" data-id="${id}">Edit</button><button class="btn" data-act="del" data-id="${id}">Delete</button>`:""}<button class="btn" data-close>Close</button></div></div>`;
+  dlg.showModal()}
+function showEdit(id){
+  const e=EV.find(x=>x.id===id);if(!e)return;
+  dlg.innerHTML='<div class="dlg"><h2 style="margin:0">Edit event</h2><div id="eh"></div></div>';
+  $("#eh",dlg).append(buildForm(e,async o=>{await saveEv(o,e);dlg.close();toast("Changes saved")}));dlg.showModal()}
+function showLogin(){
+  dlg.innerHTML=`<div class="dlg"><h2 style="margin:0">Admin login</h2><form class="form" id="lf"><label>Username<input name="u" autocomplete="username" required></label><label>Password<input name="p" type="password" autocomplete="current-password" required></label><p class="err"></p><div class="row"><button class="btn pri">Log in</button><button type="button" class="btn" data-close>Cancel</button></div></form></div>`;
+  $("#lf",dlg).onsubmit=async ev=>{ev.preventDefault();const f=ev.target,err=$(".err",f);
+    if(!sb||f.elements.u.value.trim().toLowerCase()!=="innovation"){err.textContent="Wrong username or password.";return}
+    const{error}=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password:f.elements.p.value});
+    if(error){err.textContent="Wrong username or password.";return}
+    admin=true;dlg.close();view="admin";render()};
+  dlg.showModal()}
+
+document.addEventListener("click",async ev=>{
+  const a=ev.target.closest("[data-act]"),o=ev.target.closest("[data-open]"),m=ev.target.closest("[data-m]"),v=ev.target.closest("[data-v]");
+  if(a){const k=a.dataset.act,id=a.dataset.id;
+    if(k==="login")showLogin();
+    else if(k==="logout"){await sb.auth.signOut();admin=false;dlg.open&&dlg.close();render()}
+    else if(k==="edit"){dlg.open&&dlg.close();showEdit(id)}
+    else if(k==="del"&&confirm("Delete this event?")){const e=EV.find(x=>x.id===id),{error}=await sb.from("events").delete().eq("id",id);
+      if(error)toast("Could not delete that event.");else{rmFile(e&&e.path);dlg.open&&dlg.close();await load()}}
+  }else if(o)showEvent(o.dataset.open);
+  else if(m){mon=+m.dataset.m;render()}
+  else if(v){view=v.dataset.v;render()}});
+
+render();
+(async()=>{if(sb){const{data}=await sb.auth.getSession();admin=!!(data&&data.session)}await load()})();
+setInterval(()=>{if(!dlg.open&&view!=="admin")load()},60000);
+</script>
+</body>
+</html>
