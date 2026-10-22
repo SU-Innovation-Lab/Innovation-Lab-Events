@@ -88,6 +88,14 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .fcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
 .fcard img{width:100%;border-radius:8px;cursor:zoom-in;display:block;background:#000}
 .cap{font-weight:600}
+.spot{display:grid;gap:20px;margin-bottom:28px}
+.spot .hero{margin-bottom:0}
+.spot.multi{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.spot.multi .hero{grid-template-columns:1fr}
+.spot.multi .hero img{max-height:460px}
+.spot.multi .hero .in{padding:22px}
+.display .spot.multi .hero img{max-height:360px}
+.display .spot.multi .hero h2{font-size:clamp(30px,3vw,44px)}
 </style>
 </head>
 <body>
@@ -142,11 +150,11 @@ async function saveEv(o,old){
   if(old&&old.path&&old.path!==o.path)rmFile(old.path);
   await load()}
 
+const hero=e=>`<section class="hero${e.flier?"":" noimg"}">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}" data-open="${e.id}">`:""}<div class="in"><span class="pill">Up next · ${lbl(e)}</span><h2>${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row"><button class="btn pri" data-open="${e.id}">View details</button></div></div></section>`;
 function viewUp(){
-  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),nx=up[0];
-  let h=nx?`<section class="hero${nx.flier?"":" noimg"}">${nx.flier?`<img src="${esc(nx.flier)}" alt="Flier for ${esc(nx.title)}" data-open="${nx.id}">`:""}<div class="in"><span class="pill">Up next · ${lbl(nx)}</span><h2>${esc(nx.title)}</h2>${tag(nx)}<div class="meta"><div>${fmtD(nx)}</div><div>${esc(timeStr(nx))}</div><div>${esc(nx.location)}</div></div><div class="row"><button class="btn pri" data-open="${nx.id}">View details</button></div></div></section>`
-   :`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
-  if(up.length>1)h+=`<h3>Coming up</h3><div class="grid">${up.slice(1,DISPLAY?5:undefined).map(card).join("")}</div>`;
+  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),day=up.filter(e=>e.date===(up[0]||{}).date),rest=up.slice(day.length);
+  let h=day.length?`<div class="spot${day.length>1?" multi":""}">${day.map(e=>hero(e)).join("")}</div>`:`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
+  if(rest.length)h+=`<h3>Coming up</h3><div class="grid">${rest.slice(0,DISPLAY?4:undefined).map(card).join("")}</div>`;
   if(past.length&&!DISPLAY)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
   return h}
 function viewCal(){
