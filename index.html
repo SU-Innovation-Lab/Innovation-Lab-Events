@@ -84,6 +84,10 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .display .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 .display .card img{height:110px}
 .display h3{font-size:26px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;align-items:start}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
+.fcard img{width:100%;border-radius:8px;cursor:zoom-in;display:block;background:#000}
+.cap{font-weight:600}
 </style>
 </head>
 <body>
@@ -107,12 +111,12 @@ const $=(s,e=document)=>e.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const DISPLAY=new URLSearchParams(location.search).has("display");
 document.body.classList.toggle("display",DISPLAY);
-let EV=[],admin=false,view="up",mon=0,loaded=false,fail="";
+let EV=[],FM=[],ffail="",admin=false,view="up",mon=0,loaded=false,fail="";
 const fromRow=r=>({id:r.id,lead:r.lead,title:r.title,date:r.date,start:r.start_t||"",end:r.end_t||"",timeText:r.time_text||"",location:r.location,flier:r.flier_url||"",path:r.flier_path||""});
 const toRow=o=>({lead:o.lead,title:o.title,date:o.date,start_t:o.start,end_t:o.end,time_text:o.timeText,location:o.location,flier_url:o.flier,flier_path:o.path});
 async function load(){
   if(!sb)fail=typeof supabase==="undefined"?"The Supabase library did not load (network or content blocker?).":"Add your Supabase URL, key and admin email at the top of index.html.";
-  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events: "+(error.message||"unknown error");else{fail="";EV=data.map(fromRow)}}
+  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events: "+(error.message||"unknown error");else{fail="";EV=data.map(fromRow)}const f=await sb.from("interest_forms").select("*").order("created_at");if(f.error){ffail="Could not load interest forms. Run the interest forms SQL in Supabase.";FM=[]}else{ffail="";FM=f.data}}
   loaded=true;render()}
 const hue=s=>0;
 const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
@@ -156,11 +160,12 @@ function viewAdmin(){
   return`<div class="admin"><div class="panel"><h3>Add an event</h3><div id="addhost"></div></div><div class="panel"><h3>All events</h3>${sorted().map(e=>`<div class="li"><div><b>${esc(e.title)}</b><br><small class="sub">${fmtD(e)} · ${esc(e.lead)}</small></div><div class="row"><button class="btn" data-act="edit" data-id="${e.id}">Edit</button><button class="btn" data-act="del" data-id="${e.id}">Delete</button></div></div>`).join("")}<p class="sub">Changes go live for everyone as soon as you save. Others see them after a refresh.</p></div></div>`}
 function render(){
   if(!admin&&view==="admin")view="up";
-  $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],...(admin?[["admin","Add event"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
+  $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],["forms","Interest forms"],...(admin?[["admin","Add event"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
   $("#who").innerHTML=admin?`<span>Innovation</span><button class="btn" data-act="logout">Log out</button>`:`<button class="btn" data-act="login">Admin login</button>`;
-  const body=!loaded?'<p class="sub">Loading events…</p>':view==="up"?viewUp():view==="cal"?viewCal():viewAdmin();
-  $("#app").innerHTML=(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
-  if(loaded&&view==="admin")$("#addhost").append(buildForm({},async o=>{await saveEv(o);toast("Event added")}))}
+  const body=!loaded?'<p class="sub">Loading events…</p>':view==="up"?viewUp():view==="cal"?viewCal():view==="forms"?viewForms():viewAdmin();
+  $("#app").innerHTML=(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(view==="forms"&&ffail?`<div class="note draft">${esc(ffail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
+  if(loaded&&view==="admin")$("#addhost").append(buildForm({},async o=>{await saveEv(o);toast("Event added")}));
+  if(loaded&&view==="forms"&&admin)$("#fmhost").append(buildFlierForm())}
 
 const shrink=file=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const s=Math.min(1,1400/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.85))};i.src=r.result};r.readAsDataURL(file)});
 
@@ -185,6 +190,24 @@ function buildForm(e,done){
     try{await done(o)}catch(x){err("Could not save: "+(x.message||x));b.disabled=false;b.textContent=lab}};
   return f}
 
+function viewForms(){
+  let h='<h2 style="margin:0 0 14px">Interest forms</h2>';
+  if(admin)h+='<div class="panel" style="margin-bottom:18px"><h3>Add a flier</h3><div id="fmhost"></div></div>';
+  h+=FM.length?`<div class="fgrid">${FM.map(m=>`<div class="fcard"><img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}" data-zoom="${m.id}">${m.label?`<div class="cap">${esc(m.label)}</div>`:""}${admin?`<button class="btn" data-act="delform" data-id="${m.id}">Remove</button>`:""}</div>`).join("")}</div>`:'<p class="sub">No interest forms right now. Check back soon.</p>';
+  return h}
+function buildFlierForm(){
+  const f=document.createElement("form");f.className="form";let fl="";
+  f.innerHTML=`<label>Label <small>(optional, e.g. IEEE Interest Form)</small><input name="label"></label><label>Flier <small>(PNG or JPG from your phone or computer)</small><input type="file" name="file" accept="image/png,image/jpeg"></label><div class="prev"></div><p class="err"></p><div class="row"><button class="btn pri" data-go>Add flier</button></div>`;
+  const err=m=>{$(".err",f).textContent=m};
+  f.elements.file.onchange=async()=>{const x=f.elements.file.files[0];if(!x)return;try{fl=await shrink(x);err("");$(".prev",f).innerHTML=`<img src="${esc(fl)}" alt="Flier preview">`}catch{err("Could not read that image. Use a PNG or JPG.")}};
+  f.onsubmit=async ev=>{ev.preventDefault();if(!fl)return err("Choose a PNG or JPG flier.");
+    const b=$("[data-go]",f);b.disabled=true;b.textContent="Saving…";err("");
+    try{const u=await upload(fl),{error}=await sb.from("interest_forms").insert({label:f.elements.label.value.trim(),flier_url:u.url,flier_path:u.path});if(error){rmFile(u.path);throw error}await load();toast("Flier added")}
+    catch(x){err("Could not save: "+(x.message||x));b.disabled=false;b.textContent="Add flier"}};
+  return f}
+function showFlier(id){const m=FM.find(x=>x.id===id);if(!m)return;
+  dlg.innerHTML=`<div class="dlg"><img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}">${m.label?`<h2 style="margin:0">${esc(m.label)}</h2>`:""}<div class="row"><button class="btn" data-close>Close</button></div></div>`;dlg.showModal()}
+
 const dlg=$("#dlg");
 dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.closest("[data-close]"))dlg.close()});
 function showEvent(id){
@@ -205,21 +228,24 @@ function showLogin(){
   dlg.showModal()}
 
 document.addEventListener("click",async ev=>{
-  const a=ev.target.closest("[data-act]"),o=ev.target.closest("[data-open]"),m=ev.target.closest("[data-m]"),v=ev.target.closest("[data-v]");
+  const a=ev.target.closest("[data-act]"),o=ev.target.closest("[data-open]"),m=ev.target.closest("[data-m]"),v=ev.target.closest("[data-v]"),z=ev.target.closest("[data-zoom]");
   if(a){const k=a.dataset.act,id=a.dataset.id;
     if(k==="login")showLogin();
     else if(k==="logout"){await sb.auth.signOut();admin=false;dlg.open&&dlg.close();render()}
     else if(k==="edit"){dlg.open&&dlg.close();showEdit(id)}
+    else if(k==="delform"&&confirm("Remove this flier?")){const m=FM.find(x=>x.id===id),{error}=await sb.from("interest_forms").delete().eq("id",id);
+      if(error)toast("Could not remove that flier.");else{rmFile(m&&m.flier_path);await load()}}
     else if(k==="del"&&confirm("Delete this event?")){const e=EV.find(x=>x.id===id),{error}=await sb.from("events").delete().eq("id",id);
       if(error)toast("Could not delete that event.");else{rmFile(e&&e.path);dlg.open&&dlg.close();await load()}}
-  }else if(o)showEvent(o.dataset.open);
+  }else if(z)showFlier(z.dataset.zoom);
+  else if(o)showEvent(o.dataset.open);
   else if(m){mon=+m.dataset.m;render()}
   else if(v){view=v.dataset.v;render()}});
 
 window.addEventListener("error",e=>{fail="Page error: "+e.message;if(loaded)render()});
 render();
 (async()=>{if(sb){const{data}=await sb.auth.getSession();admin=!!(data&&data.session)}await load()})();
-setInterval(()=>{if(!dlg.open&&view!=="admin")load()},60000);
+setInterval(()=>{if(!dlg.open&&view!=="admin"&&!(admin&&view==="forms"))load()},60000);
 </script>
 </body>
 </html>
