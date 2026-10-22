@@ -152,7 +152,7 @@ async function saveEv(o,old){
 
 const hero=e=>`<section class="hero${e.flier?"":" noimg"}">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}" data-open="${e.id}">`:""}<div class="in"><span class="pill">Up next · ${lbl(e)}</span><h2>${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row"><button class="btn pri" data-open="${e.id}">View details</button></div></div></section>`;
 function viewUp(){
-  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),day=up.filter(e=>e.date===(up[0]||{}).date),rest=up.slice(day.length);
+  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),day=up.slice(0,2),rest=up.slice(day.length);
   let h=day.length?`<div class="spot${day.length>1?" multi":""}">${day.map(e=>hero(e)).join("")}</div>`:`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
   if(rest.length)h+=`<h3>Coming up</h3><div class="grid">${rest.slice(0,DISPLAY?4:undefined).map(card).join("")}</div>`;
   if(past.length&&!DISPLAY)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
