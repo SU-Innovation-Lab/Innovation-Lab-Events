@@ -96,6 +96,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .spot.multi .hero .in{padding:22px}
 .display .spot.multi .hero img{max-height:360px}
 .display .spot.multi .hero h2{font-size:clamp(30px,3vw,44px)}
+.credit{text-align:right;font-size:11px;color:var(--mut);margin:-6px 0 6px}
 </style>
 </head>
 <body>
@@ -171,7 +172,7 @@ function render(){
   $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],["forms","Interest forms"],...(admin?[["admin","Add event"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
   $("#who").innerHTML=admin?`<span>Innovation</span><button class="btn" data-act="logout">Log out</button>`:`<button class="btn" data-act="login">Admin login</button>`;
   const body=!loaded?'<p class="sub">Loading events…</p>':view==="up"?viewUp():view==="cal"?viewCal():view==="forms"?viewForms():viewAdmin();
-  $("#app").innerHTML=(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(view==="forms"&&ffail?`<div class="note draft">${esc(ffail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
+  $("#app").innerHTML='<div class="credit">Developed by Cliff!</div>'+(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(view==="forms"&&ffail?`<div class="note draft">${esc(ffail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
   if(loaded&&view==="admin")$("#addhost").append(buildForm({},async o=>{await saveEv(o);toast("Event added")}));
   if(loaded&&view==="forms"&&admin)$("#fmhost").append(buildFlierForm())}
 
