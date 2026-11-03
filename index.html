@@ -78,10 +78,6 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 @media(max-width:760px){.hero,.admin{grid-template-columns:1fr}.hero .in{padding:20px}.cell{min-height:70px}.chip{font-size:10px;padding:2px 3px}header{padding:10px 12px}}
 .display header,.display nav,.display .who,.display .hero .row{display:none}
 .display main{max-width:none;padding:24px 28px}
-.display .hero img{max-height:300px;cursor:default}
-.display .hero h2{font-size:clamp(28px,2.4vw,40px)}
-.display .meta{font-size:18px}
-.display .pill{font-size:16px}
 .display .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 .display .card{min-height:120px}
 .display .card.has{flex-direction:row;height:220px}
@@ -101,16 +97,11 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .spotrow.two .hero .in{padding:20px}
 .spotrow.two .hero h2{font-size:clamp(24px,3vw,34px)}
 .pill.alt{background:#fff;color:#000}
-.display .spotrow{margin-bottom:8px}
-.display .spotrow.two .hero{grid-template-columns:minmax(0,.85fr) minmax(0,1fr)}
-.display .spotrow.two .hero.noimg{grid-template-columns:1fr}
-.display .spotrow.two .hero img{max-height:300px}
 @media(max-width:900px){.spotrow.two{grid-template-columns:1fr}}
-.display .hero .in{padding:16px 22px}
-.dgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:24px;height:calc(100vh - 150px)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:24px;height:calc(100vh - 150px)}
 .dl{min-width:0;overflow:hidden}
 .dl .spotrow{margin-bottom:0}
-.minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .mini{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .dt{background:var(--red);border-radius:10px;width:58px;flex:none;text-align:center;padding:6px 0;line-height:1.05}
 .dt b{display:block;font-size:26px}
@@ -121,15 +112,33 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .mini img{height:56px;width:42px;object-fit:contain;background:#000;border-radius:4px;flex:none}
 .ong{display:flex;flex-direction:column;background:linear-gradient(180deg,#1c0a0f,#121212 55%);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:14px;padding:16px 20px;overflow:hidden}
 .ong h3{align-self:flex-start;margin:0 0 14px;font-size:26px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;border-bottom:3px solid var(--red);padding-bottom:4px}
-.fl{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));grid-template-rows:repeat(var(--r,2),minmax(0,1fr));gap:14px}
+.fl{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:12px;align-content:start}
 .fl.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.fl img{width:100%;height:100%;object-fit:contain;background:#000;border:1px solid #444;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.fl img{width:100%;height:auto;aspect-ratio:8.5/11;object-fit:contain;background:#000;border:1px solid #444;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .ongtxt{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:34px;line-height:1.35;padding:30px;white-space:pre-wrap;border:2px dashed #6a2a35;border-radius:14px;color:#f2f2f2}
 .form textarea{padding:9px 10px;border:1px solid #666;border-radius:8px;width:100%;background:#000;color:#fff;font:inherit;resize:vertical}
 .pv{position:relative;overflow:hidden;border:1px solid #444;border-radius:8px}
 .pv iframe{width:1920px;height:1080px;border:0;transform-origin:0 0;display:block}
-.display .spotrow.two .hero h2{font-size:28px;overflow-wrap:anywhere}
 .display .hero .in{min-width:0}
+.display .spotrow{height:590px;margin:0 0 6px;flex:none}
+.display .spotrow .hero{height:100%;margin:0;border-top-width:6px;grid-template-rows:minmax(0,1fr)}
+.display .spotrow .hero img{max-height:none;width:100%;height:100%;object-fit:contain;cursor:default}
+.display .spotrow .hero .in{padding:28px 34px;min-width:0}
+.display .spotrow .hero h2{font-size:52px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.display .spotrow .meta{font-size:26px}
+.display .spotrow .pill{font-size:20px}
+.display .spotrow .tag{font-size:16px}
+.display .spotrow.two{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:20px}
+.display .spotrow.two .hero.imp{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);box-shadow:0 0 0 2px var(--red),0 14px 50px rgba(200,16,46,.35)}
+.display .spotrow.two .hero.imp.noimg{grid-template-columns:1fr}
+.display .spotrow.two .hero:not(.imp){grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+.display .spotrow.two .hero:not(.imp).noimg{grid-template-rows:auto}
+.display .spotrow.two .hero:not(.imp) .in{padding:16px 22px}
+.display .spotrow.two .hero:not(.imp) h2{font-size:30px}
+.display .spotrow.two .hero:not(.imp) .meta{font-size:19px}
+.display .spotrow.two .hero:not(.imp) .pill{font-size:16px}
+.dl{display:flex;flex-direction:column}
+.ongtxt{font-size:28px}
 </style>
 </head>
 <body>
@@ -185,7 +194,7 @@ async function saveEv(o,old){
   if(old&&old.path&&old.path!==o.path)rmFile(old.path);
   await load()}
 
-const hero=(e,label,alt)=>`<section class="hero${e.flier?"":" noimg"}">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}" data-open="${e.id}">`:""}<div class="in"><span class="pill${alt?" alt":""}">${label}</span><h2>${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row"><button class="btn pri" data-open="${e.id}">View details</button></div></div></section>`;
+const hero=(e,label,alt)=>`<section class="hero${e.flier?"":" noimg"}${alt?" imp":""}">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}" data-open="${e.id}">`:""}<div class="in"><span class="pill${alt?" alt":""}">${label}</span><h2>${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row"><button class="btn pri" data-open="${e.id}">View details</button></div></div></section>`;
 function viewUp(){
   const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),nx=up[0],imp=EV.find(e=>e.featured&&en(e)>=n),rest=up.slice(1);
   let h=nx?`<div class="spotrow${imp?" two":""}">${hero(nx,"Up next · "+lbl(nx))}${imp?hero(imp,"\u2605 Important · "+lbl(imp),1):""}</div>`:`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
@@ -194,8 +203,12 @@ function viewUp(){
   return h}
 const mini=e=>{const d=new Date(e.date+"T00:00");return`<div class="mini"><div class="dt"><b>${d.getDate()}</b><span>${d.toLocaleString("en-US",{month:"short"})}</span></div><div class="mt"><b>${esc(e.title)}</b><small>${esc(timeStr(e))} · ${esc(e.location)}</small></div>${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}</div>`};
 function viewDisplay(){
-  const n=new Date(),up=sorted().filter(e=>en(e)>=n),nx=up[0],imp=EV.find(e=>e.featured&&en(e)>=n),rest=up.slice(1,11);
-  const left=(nx?`<div class="spotrow${imp?" two":""}">${hero(nx,"Up next · "+lbl(nx))}${imp?hero(imp,"\u2605 Important · "+lbl(imp),1):""}</div>`:`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2></div></section>`)+(rest.length?`<h3>Coming up</h3><div class="minis">${rest.map(mini).join("")}</div>`:"");
+  const n=new Date(),up=sorted().filter(e=>en(e)>=n),nx=up[0],imp=EV.find(e=>e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
+  const spot=!nx?`<div class="spotrow"><section class="hero noimg"><div class="in"><h2>No upcoming events</h2></div></section></div>`
+    :same?`<div class="spotrow">${hero(imp,"\u2605 Important · Up next · "+lbl(imp),1)}</div>`
+    :imp?`<div class="spotrow two">${hero(imp,"\u2605 Important · "+lbl(imp),1)}${hero(nx,"Up next · "+lbl(nx))}</div>`
+    :`<div class="spotrow">${hero(nx,"Up next · "+lbl(nx))}</div>`;
+  const left=spot+(rest.length?`<h3>Coming up</h3><div class="minis">${rest.map(mini).join("")}</div>`:"");
   const fl=[...FM].reverse().slice(0,FM.length>4?6:4);
   return`<div class="dgrid"><div class="dl">${left}</div><aside class="ong"><h3>Ongoing Events</h3>${fl.length?`<div class="fl" style="--c:${fl.length===1?1:2};--r:${fl.length===1?1:fl.length<=4?2:Math.ceil(fl.length/2)}">${fl.map(m=>`<img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}">`).join("")}</div>`:`<div class="ongtxt">${esc(ONGOING)}</div>`}</aside></div>`}
 function viewScreen(){
