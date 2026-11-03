@@ -98,7 +98,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .spotrow.two .hero h2{font-size:clamp(24px,3vw,34px)}
 .pill.alt{background:#fff;color:#000}
 @media(max-width:900px){.spotrow.two{grid-template-columns:1fr}}
-.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:24px;height:calc(100vh - 150px)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 770px;gap:24px;height:calc(100vh - 48px)}
 .dl{min-width:0;overflow:hidden}
 .dl .spotrow{margin-bottom:0}
 .minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -111,8 +111,9 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .mt small{display:block;color:var(--mut);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mini img{height:56px;width:42px;object-fit:contain;background:#000;border-radius:4px;flex:none}
 .ong{display:flex;flex-direction:column;background:linear-gradient(180deg,#1c0a0f,#121212 55%);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:14px;padding:16px 20px;overflow:hidden}
-.ong h3{align-self:flex-start;margin:0 0 14px;font-size:26px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;border-bottom:3px solid var(--red);padding-bottom:4px}
-.fl{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:12px;align-content:start}
+.ong h3{align-self:flex-start;line-height:1.2;margin:0 0 12px;font-size:26px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;border-bottom:3px solid var(--red);padding-bottom:4px}
+.fl{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:12px;align-content:center}
+.fl.one{grid-template-columns:minmax(0,700px);justify-content:center}
 .fl.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .fl img{width:100%;height:auto;aspect-ratio:8.5/11;object-fit:contain;background:#000;border:1px solid #444;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .ongtxt{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:34px;line-height:1.35;padding:30px;white-space:pre-wrap;border:2px dashed #6a2a35;border-radius:14px;color:#f2f2f2}
@@ -120,25 +121,28 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .pv{position:relative;overflow:hidden;border:1px solid #444;border-radius:8px}
 .pv iframe{width:1920px;height:1080px;border:0;transform-origin:0 0;display:block}
 .display .hero .in{min-width:0}
-.display .spotrow{height:590px;margin:0 0 6px;flex:none}
+.display .spotrow{height:560px;margin:0 0 6px;flex:none}
 .display .spotrow .hero{height:100%;margin:0;border-top-width:6px;grid-template-rows:minmax(0,1fr)}
 .display .spotrow .hero img{max-height:none;width:100%;height:100%;object-fit:contain;cursor:default}
 .display .spotrow .hero .in{padding:28px 34px;min-width:0}
-.display .spotrow .hero h2{font-size:52px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.display .spotrow .meta{font-size:26px}
+.display .spotrow .hero h2{font-size:46px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.display .spotrow .meta{font-size:24px}
 .display .spotrow .pill{font-size:20px}
 .display .spotrow .tag{font-size:16px}
-.display .spotrow.two{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:20px}
-.display .spotrow.two .hero.imp{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);box-shadow:0 0 0 2px var(--red),0 14px 50px rgba(200,16,46,.35)}
+.display .spotrow.two{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:20px}
+.display .spotrow.two .hero.imp{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);box-shadow:0 0 0 2px var(--red),0 14px 50px rgba(200,16,46,.35)}
 .display .spotrow.two .hero.imp.noimg{grid-template-columns:1fr}
 .display .spotrow.two .hero:not(.imp){grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
 .display .spotrow.two .hero:not(.imp).noimg{grid-template-rows:auto}
 .display .spotrow.two .hero:not(.imp) .in{padding:16px 22px}
 .display .spotrow.two .hero:not(.imp) h2{font-size:30px}
+.display .spotrow.two .hero.imp h2{font-size:38px;overflow-wrap:break-word;hyphens:auto}
 .display .spotrow.two .hero:not(.imp) .meta{font-size:19px}
 .display .spotrow.two .hero:not(.imp) .pill{font-size:16px}
 .dl{display:flex;flex-direction:column}
-.ongtxt{font-size:28px}
+.ongtxt{font-size:32px}
+.display .credit{position:fixed;top:6px;right:28px;margin:0;z-index:5}
+.display .spotrow:not(.two) .hero:not(.noimg){grid-template-columns:minmax(0,.7fr) minmax(0,1fr)}
 .hid{display:inline-block;align-self:flex-start;justify-self:start;padding:1px 9px;border:1px dashed var(--red);border-radius:6px;font-size:13px;font-weight:600;color:#ff8a9a}
 .chip.hide{background:transparent;border:1px dashed var(--red)}
 .form label.chk{display:flex;align-items:center;gap:8px}
@@ -208,14 +212,14 @@ function viewUp(){
   return h}
 const mini=e=>{const d=new Date(e.date+"T00:00");return`<div class="mini"><div class="dt"><b>${d.getDate()}</b><span>${d.toLocaleString("en-US",{month:"short"})}</span></div><div class="mt"><b>${esc(e.title)}</b><small>${esc(timeStr(e))} · ${esc(e.location)}</small></div>${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}</div>`};
 function viewDisplay(){
-  const n=new Date(),up=sorted().filter(e=>!e.hidden&&en(e)>=n),nx=up[0],imp=EV.find(e=>!e.hidden&&e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
+  const n=new Date(),up=sorted().filter(e=>!e.hidden&&en(e)>=n),nx=up[0],imp=EV.find(e=>!e.hidden&&e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,12);
   const spot=!nx?`<div class="spotrow"><section class="hero noimg"><div class="in"><h2>No upcoming events</h2></div></section></div>`
     :same?`<div class="spotrow">${hero(imp,"\u2605 Important · Up next · "+lbl(imp),1)}</div>`
     :imp?`<div class="spotrow two">${hero(imp,"\u2605 Important · "+lbl(imp),1)}${hero(nx,"Up next · "+lbl(nx))}</div>`
     :`<div class="spotrow">${hero(nx,"Up next · "+lbl(nx))}</div>`;
-  const left=spot+(rest.length?`<h3>Coming up</h3><div class="minis">${rest.map(mini).join("")}</div>`:"");
+  const left=(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+spot+(rest.length?`<h3>Coming up</h3><div class="minis">${rest.map(mini).join("")}</div>`:"");
   const fl=[...FM].reverse().slice(0,FM.length>4?6:4);
-  return`<div class="dgrid"><div class="dl">${left}</div><aside class="ong"><h3>Ongoing Events</h3>${fl.length?`<div class="fl" style="--c:${fl.length===1?1:2};--r:${fl.length===1?1:fl.length<=4?2:Math.ceil(fl.length/2)}">${fl.map(m=>`<img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}">`).join("")}</div>`:`<div class="ongtxt">${esc(ONGOING)}</div>`}</aside></div>`}
+  return`<div class="dgrid"><div class="dl">${left}</div><aside class="ong"><h3>Ongoing Events</h3>${fl.length?`<div class="fl${fl.length===1?" one":""}" style="--c:${fl.length>4?3:fl.length===1?1:2}">${fl.map(m=>`<img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}">`).join("")}</div>`:`<div class="ongtxt">${esc(ONGOING)}</div>`}</aside></div>`}
 function viewScreen(){
   return`<div class="panel" style="margin-bottom:18px;max-width:760px"><h3>Screen text</h3><form class="form" id="txt"><label>Banner message <small>(top of the site and the lab screen)</small><input name="notice" value="${esc(NOTICE)}"></label><label>Ongoing Events text <small>(shown only when there are no Interest Form fliers)</small><textarea name="ong" rows="3">${esc(ONGOING)}</textarea></label><p class="err"></p><div class="row"><button class="btn pri">Save text</button></div></form><p class="sub">Ongoing Events shows your newest Interest Form fliers (up to 6). Add or remove them on the Interest forms tab.</p></div><div class="panel"><h3>Lab screen preview</h3><div class="pv" id="pv"><iframe src="?display=1&t=${Date.now()}" title="Lab screen preview"></iframe></div><p class="sub">Live preview of what the lab image will show. The JPG itself refreshes hourly.</p></div>`}
 function fitPv(){const w=$("#pv");if(!w)return;const k=w.clientWidth/1920;$("iframe",w).style.transform="scale("+k+")";w.style.height=1080*k+"px"}
@@ -237,7 +241,7 @@ function render(){
   $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],["forms","Interest forms"],...(admin?[["admin","Add event"],["screen","Lab screen"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
   $("#who").innerHTML=admin?`<span>Innovation</span><button class="btn" data-act="logout">Log out</button>`:`<button class="btn" data-act="login">Admin login</button>`;
   const body=!loaded?'<p class="sub">Loading events…</p>':DISPLAY?viewDisplay():view==="up"?viewUp():view==="cal"?viewCal():view==="forms"?viewForms():view==="screen"?viewScreen():viewAdmin();
-  $("#app").innerHTML='<div class="credit">Developed by Cliff!</div>'+(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(view==="forms"&&ffail?`<div class="note draft">${esc(ffail)}</div>`:"")+(NOTICE?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
+  $("#app").innerHTML='<div class="credit">Developed by Cliff!</div>'+(fail?`<div class="note draft">${esc(fail)}</div>`:"")+(view==="forms"&&ffail?`<div class="note draft">${esc(ffail)}</div>`:"")+(NOTICE&&!DISPLAY?`<div class="note">${esc(NOTICE)}</div>`:"")+body;
   if(loaded&&view==="admin")$("#addhost").append(buildForm({},async o=>{await saveEv(o);toast("Event added")}));
   if(loaded&&view==="forms"&&admin)$("#fmhost").append(buildFlierForm());
   if(loaded&&view==="screen")initScreen()}
