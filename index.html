@@ -139,6 +139,11 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .display .spotrow.two .hero:not(.imp) .pill{font-size:16px}
 .dl{display:flex;flex-direction:column}
 .ongtxt{font-size:28px}
+.hid{display:inline-block;align-self:flex-start;justify-self:start;padding:1px 9px;border:1px dashed var(--red);border-radius:6px;font-size:13px;font-weight:600;color:#ff8a9a}
+.chip.hide{background:transparent;border:1px dashed var(--red)}
+.form label.chk{display:flex;align-items:center;gap:8px}
+.form .chk input{width:18px;height:18px;padding:0;flex:none}
+.li .btn{padding:6px 10px;font-size:14px}
 </style>
 </head>
 <body>
@@ -164,11 +169,11 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const DISPLAY=new URLSearchParams(location.search).has("display");
 document.body.classList.toggle("display",DISPLAY);
 let EV=[],FM=[],ffail="",admin=false,view="up",mon=0,loaded=false,fail="";
-const fromRow=r=>({id:r.id,lead:r.lead,title:r.title,date:r.date,start:r.start_t||"",end:r.end_t||"",timeText:r.time_text||"",location:r.location,flier:r.flier_url||"",path:r.flier_path||"",featured:!!r.featured});
-const toRow=o=>({lead:o.lead,title:o.title,date:o.date,start_t:o.start,end_t:o.end,time_text:o.timeText,location:o.location,flier_url:o.flier,flier_path:o.path});
+const fromRow=r=>({id:r.id,lead:r.lead,title:r.title,date:r.date,start:r.start_t||"",end:r.end_t||"",timeText:r.time_text||"",location:r.location,flier:r.flier_url||"",path:r.flier_path||"",featured:!!r.featured,hidden:!!r.hidden});
+const toRow=o=>({lead:o.lead,title:o.title,date:o.date,start_t:o.start,end_t:o.end,time_text:o.timeText,location:o.location,flier_url:o.flier,flier_path:o.path,...((o.hidden||o.hadHidden)?{hidden:!!o.hidden}:{})});
 async function load(){
   if(!sb)fail=typeof supabase==="undefined"?"The Supabase library did not load (network or content blocker?).":"Add your Supabase URL, key and admin email at the top of index.html.";
-  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events: "+(error.message||"unknown error");else{fail="";EV=data.map(fromRow)}const f=await sb.from("interest_forms").select("*").order("created_at");if(f.error){ffail="Could not load interest forms. Run the interest forms SQL in Supabase.";FM=[]}else{ffail="";FM=f.data}const ss=await sb.from("settings").select("*");if(!ss.error)ss.data.forEach(r=>{if(r.key==="notice")NOTICE=r.value;if(r.key==="ongoing_text")ONGOING=r.value})}
+  else{const{data,error}=await sb.from("events").select("*");if(error)fail="Could not load events: "+(error.message||"unknown error");else{fail="";EV=data.map(fromRow).filter(e=>admin||!e.hidden)}const f=await sb.from("interest_forms").select("*").order("created_at");if(f.error){ffail="Could not load interest forms. Run the interest forms SQL in Supabase.";FM=[]}else{ffail="";FM=f.data}const ss=await sb.from("settings").select("*");if(!ss.error)ss.data.forEach(r=>{if(r.key==="notice")NOTICE=r.value;if(r.key==="ongoing_text")ONGOING=r.value})}
   loaded=true;render()}
 const hue=s=>0;
 const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
@@ -180,7 +185,7 @@ const sorted=()=>[...EV].sort((a,b)=>(a.date+(a.start||"99")).localeCompare(b.da
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 function lbl(e){const n=new Date();if(st(e)<=n&&n<=en(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
 const toast=m=>{const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2600)};
-const tag=e=>`<span class="tag">${esc(e.lead)}</span>`;
+const tag=e=>`<span class="tag">${esc(e.lead)}</span>${e.hidden?'<span class="hid">Hidden</span>':""}`;
 const card=e=>`<button class="card${e.flier?" has":""}" data-open="${e.id}">${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}<span class="t">${tag(e)}<b>${esc(e.title)}</b><small>${fmtD(e)} · ${esc(timeStr(e))}</small><small>${esc(e.location)}</small></span></button>`;
 
 async function upload(du){const b=await(await fetch(du)).blob(),p=crypto.randomUUID()+".jpg";
@@ -203,7 +208,7 @@ function viewUp(){
   return h}
 const mini=e=>{const d=new Date(e.date+"T00:00");return`<div class="mini"><div class="dt"><b>${d.getDate()}</b><span>${d.toLocaleString("en-US",{month:"short"})}</span></div><div class="mt"><b>${esc(e.title)}</b><small>${esc(timeStr(e))} · ${esc(e.location)}</small></div>${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}</div>`};
 function viewDisplay(){
-  const n=new Date(),up=sorted().filter(e=>en(e)>=n),nx=up[0],imp=EV.find(e=>e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
+  const n=new Date(),up=sorted().filter(e=>!e.hidden&&en(e)>=n),nx=up[0],imp=EV.find(e=>!e.hidden&&e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
   const spot=!nx?`<div class="spotrow"><section class="hero noimg"><div class="in"><h2>No upcoming events</h2></div></section></div>`
     :same?`<div class="spotrow">${hero(imp,"\u2605 Important · Up next · "+lbl(imp),1)}</div>`
     :imp?`<div class="spotrow two">${hero(imp,"\u2605 Important · "+lbl(imp),1)}${hero(nx,"Up next · "+lbl(nx))}</div>`
@@ -212,7 +217,7 @@ function viewDisplay(){
   const fl=[...FM].reverse().slice(0,FM.length>4?6:4);
   return`<div class="dgrid"><div class="dl">${left}</div><aside class="ong"><h3>Ongoing Events</h3>${fl.length?`<div class="fl" style="--c:${fl.length===1?1:2};--r:${fl.length===1?1:fl.length<=4?2:Math.ceil(fl.length/2)}">${fl.map(m=>`<img src="${esc(m.flier_url)}" alt="${esc(m.label||"Interest form flier")}">`).join("")}</div>`:`<div class="ongtxt">${esc(ONGOING)}</div>`}</aside></div>`}
 function viewScreen(){
-  return`<div class="panel" style="margin-bottom:18px;max-width:760px"><h3>Screen text</h3><form class="form" id="txt"><label>Banner message <small>(top of the site and the lab screen)</small><input name="notice" value="${esc(NOTICE)}"></label><label>Ongoing Events text <small>(shown only when there are no Interest Form fliers)</small><textarea name="ong" rows="3">${esc(ONGOING)}</textarea></label><p class="err"></p><div class="row"><button class="btn pri">Save text</button></div></form><p class="sub">Ongoing Events shows your newest Interest Form fliers (up to 6). Add or remove them on the Interest forms tab.</p></div><div class="panel"><h3>Lab screen preview</h3><div class="pv" id="pv"><iframe src="?display=1" title="Lab screen preview"></iframe></div><p class="sub">Live preview of what the lab image will show. The JPG itself refreshes hourly.</p></div>`}
+  return`<div class="panel" style="margin-bottom:18px;max-width:760px"><h3>Screen text</h3><form class="form" id="txt"><label>Banner message <small>(top of the site and the lab screen)</small><input name="notice" value="${esc(NOTICE)}"></label><label>Ongoing Events text <small>(shown only when there are no Interest Form fliers)</small><textarea name="ong" rows="3">${esc(ONGOING)}</textarea></label><p class="err"></p><div class="row"><button class="btn pri">Save text</button></div></form><p class="sub">Ongoing Events shows your newest Interest Form fliers (up to 6). Add or remove them on the Interest forms tab.</p></div><div class="panel"><h3>Lab screen preview</h3><div class="pv" id="pv"><iframe src="?display=1&t=${Date.now()}" title="Lab screen preview"></iframe></div><p class="sub">Live preview of what the lab image will show. The JPG itself refreshes hourly.</p></div>`}
 function fitPv(){const w=$("#pv");if(!w)return;const k=w.clientWidth/1920;$("iframe",w).style.transform="scale("+k+")";w.style.height=1080*k+"px"}
 function initScreen(){fitPv();$("#txt").onsubmit=async ev=>{ev.preventDefault();const f=ev.target,err=$(".err",f),b=$("button",f);b.disabled=true;
   const{error}=await sb.from("settings").upsert([{key:"notice",value:f.elements.notice.value.trim()},{key:"ongoing_text",value:f.elements.ong.value.trim()}]);
@@ -223,10 +228,10 @@ function viewCal(){
   let c=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("");
   for(let i=0;i<first.getDay();i++)c+='<div class="cell off"></div>';
   for(let d=1;d<=dim;d++){const k=iso(new Date(2026,mo,d));
-    c+=`<div class="cell${k===t?" today":""}"><b>${d}</b>${ev.filter(e=>e.date===k).map(e=>`<button class="chip" data-open="${e.id}" title="${esc(e.title)}">${esc(e.title)}</button>`).join("")}</div>`}
+    c+=`<div class="cell${k===t?" today":""}"><b>${d}</b>${ev.filter(e=>e.date===k).map(e=>`<button class="chip${e.hidden?" hide":""}" data-open="${e.id}" title="${esc(e.title)}${e.hidden?" (hidden from public)":""}">${esc(e.title)}</button>`).join("")}</div>`}
   return`<div class="months"><button class="btn${mon===0?" on":""}" data-m="0">October 2026</button><button class="btn${mon===1?" on":""}" data-m="1">November 2026</button></div><div class="cal">${c}</div>`}
 function viewAdmin(){
-  return`<div class="admin"><div class="panel"><h3>Add an event</h3><div id="addhost"></div></div><div class="panel"><h3>All events</h3>${sorted().map(e=>`<div class="li"><div><b>${esc(e.title)}</b><br><small class="sub">${fmtD(e)} · ${esc(e.lead)}${e.featured?" · \u2605 Important":""}</small></div><div class="row"><button class="btn" data-act="pin" data-id="${e.id}" title="Show in the Important section">${e.featured?"Unpin":"Pin"}</button><button class="btn" data-act="edit" data-id="${e.id}">Edit</button><button class="btn" data-act="del" data-id="${e.id}">Delete</button></div></div>`).join("")}<p class="sub">Changes go live for everyone as soon as you save. Others see them after a refresh.</p></div></div>`}
+  return`<div class="admin"><div class="panel"><h3>Add an event</h3><div id="addhost"></div></div><div class="panel"><h3>All events</h3>${sorted().map(e=>`<div class="li"><div><b>${esc(e.title)}</b><br><small class="sub">${fmtD(e)} · ${esc(e.lead)}${e.featured?" · \u2605 Important":""}${e.hidden?" · Hidden":""}</small></div><div class="row"><button class="btn" data-act="hide" data-id="${e.id}" title="Hide from the public site">${e.hidden?"Unhide":"Hide"}</button><button class="btn" data-act="pin" data-id="${e.id}" title="Show in the Important section">${e.featured?"Unpin":"Pin"}</button><button class="btn" data-act="edit" data-id="${e.id}">Edit</button><button class="btn" data-act="del" data-id="${e.id}">Delete</button></div></div>`).join("")}<p class="sub">Changes go live for everyone as soon as you save. Others see them after a refresh.</p></div></div>`}
 function render(){
   if(!admin&&(view==="admin"||view==="screen"))view="up";
   $("#nav").innerHTML=[["up","Up next"],["cal","Calendar"],["forms","Interest forms"],...(admin?[["admin","Add event"],["screen","Lab screen"]]:[])].map(([k,l])=>`<button class="${view===k?"on":""}" data-v="${k}">${l}</button>`).join("");
@@ -245,6 +250,7 @@ function buildForm(e,done){
   <div class="two"><label>Date<input type="date" name="date" required min="2026-10-01" max="2026-11-30" value="${esc(e.date)}"></label><label>Start time<input type="time" name="start" value="${esc(e.start)}"></label><label>End time <small>(optional)</small><input type="time" name="end" value="${esc(e.end)}"></label></div>
   <label>Custom time text <small>(optional, e.g. TBD)</small><input name="timeText" value="${esc(e.timeText)}"></label>
   <label>Location<input name="location" required value="${esc(e.location)}"></label>
+  <label class="chk"><input type="checkbox" name="hidden"${e.hidden?" checked":""}> Hide from the public <small>(Innovation Lab only; admins still see it)</small></label>
   <label>Flier <small>(optional, PNG or JPG from your phone or computer)</small><input type="file" name="file" accept="image/png,image/jpeg"></label>
   <div class="prev"></div><p class="err"></p>
   <div class="row"><button class="btn pri" data-go>${e.id?"Save changes":"Add event"}</button>${e.id?'<button type="button" class="btn" data-close>Cancel</button>':""}</div>`;
@@ -253,7 +259,7 @@ function buildForm(e,done){
   f.addEventListener("click",ev=>{if(ev.target.closest("[data-rm]")){fl="";f.elements.file.value="";pv()}});
   f.elements.file.onchange=async()=>{const x=f.elements.file.files[0];if(!x)return;try{fl=await shrink(x);err("");pv()}catch{err("Could not read that image. Use a PNG or JPG.")}};
   f.onsubmit=async ev=>{ev.preventDefault();
-    const o={id:e.id,lead:v("lead"),title:v("title"),date:v("date"),start:v("start"),end:v("end"),timeText:v("timeText"),location:v("location"),flier:fl,path:fl&&!fl.startsWith("data:")?(e.path||""):""};
+    const o={id:e.id,lead:v("lead"),title:v("title"),date:v("date"),start:v("start"),end:v("end"),timeText:v("timeText"),location:v("location"),flier:fl,path:fl&&!fl.startsWith("data:")?(e.path||""):"",hidden:f.elements.hidden.checked,hadHidden:!!e.hidden};
     if(!o.start&&!o.timeText)return err("Enter a start time or custom time text.");
     if(o.start&&o.end&&o.end<=o.start)return err("End time must be after the start time.");
     const b=$("[data-go]",f),lab=b.textContent;b.disabled=true;b.textContent="Saving…";err("");
@@ -294,15 +300,18 @@ function showLogin(){
     if(!sb||f.elements.u.value.trim().toLowerCase()!=="innovation"){err.textContent="Wrong username or password.";return}
     const{error}=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password:f.elements.p.value});
     if(error){err.textContent="Wrong username or password.";return}
-    admin=true;dlg.close();view="admin";render()};
+    admin=true;dlg.close();view="admin";load()};
   dlg.showModal()}
 
 document.addEventListener("click",async ev=>{
   const a=ev.target.closest("[data-act]"),o=ev.target.closest("[data-open]"),m=ev.target.closest("[data-m]"),v=ev.target.closest("[data-v]"),z=ev.target.closest("[data-zoom]");
   if(a){const k=a.dataset.act,id=a.dataset.id;
     if(k==="login")showLogin();
-    else if(k==="logout"){await sb.auth.signOut();admin=false;dlg.open&&dlg.close();render()}
+    else if(k==="logout"){await sb.auth.signOut();admin=false;EV=EV.filter(e=>!e.hidden);dlg.open&&dlg.close();load()}
     else if(k==="edit"){dlg.open&&dlg.close();showEdit(id)}
+    else if(k==="hide"){const e=EV.find(x=>x.id===id),on=!(e&&e.hidden);
+      const r=await sb.from("events").update(on&&e&&e.featured?{hidden:true,featured:false}:{hidden:on}).eq("id",id);
+      if(r.error)toast("Could not update. Run setup_hidden.sql in Supabase first.");else{await load();toast(on?"Hidden from the public":"Visible to everyone")}}
     else if(k==="pin"){const e=EV.find(x=>x.id===id),on=!(e&&e.featured);
       let r=await sb.from("events").update({featured:false}).eq("featured",true);
       if(!r.error&&on)r=await sb.from("events").update({featured:true}).eq("id",id);
