@@ -8,6 +8,8 @@ A live events calendar for the Seattle University Innovation Lab, hosted free on
 
 - **Up Next (home page):** the next event is shown large with its flier, plus an **Important** panel beside it for an event an admin pins by hand (Pin/Unpin on the Add event tab). Upcoming and past events follow.
 - **Calendar:** October and November 2026, with clickable events.
+- **Hidden events (admin):** use Hide on the Add event tab, or the "Hide from the public" box on the event form, for Innovation Lab-only events. Only the logged-in admin can see them (marked Hidden); the public site and lab screen never show them.
+- **Lab screen tab (admin):** a live preview of the lab image, plus editable banner text and Ongoing Events fallback text.
 - **Interest Forms:** a page of fliers for interest forms (not events).
 - **Admin login:** top right. Logged-in staff can add, edit and delete events, upload PNG or JPG fliers from a phone or computer, and add or remove interest form fliers.
 - **Lab wallpaper image:** a screenshot of the main page is regenerated every hour as `Lab-Desktop.jpg`, for the lab computers' desktop background.
@@ -33,11 +35,13 @@ Lab-Desktop.jpg                  Generated image (do not edit by hand)
 setup.sql                        One-time database setup (events + fliers)
 setup_interest_forms.sql         One-time database setup (interest forms)
 setup_featured.sql               One-time database setup (Important/pinned event)
+setup_lab_screen.sql             One-time database setup (editable banner and screen text)
+setup_hidden.sql                 One-time database setup (hide events from the public)
 ```
 
 ## Setup from scratch
 
-1. **Supabase:** create a free project. In SQL Editor, run `setup.sql`, `setup_interest_forms.sql` and `setup_featured.sql`.
+1. **Supabase:** create a free project. In SQL Editor, run `setup.sql`, `setup_interest_forms.sql`, `setup_featured.sql`, `setup_lab_screen.sql` and `setup_hidden.sql`.
 2. **Admin account:** in Authentication > Users, add one user (auto confirm) with the email and password the staff will use. In Authentication > Sign In / Providers, turn **off** "Allow new users to sign up".
 3. **Configure the site:** at the top of the script in `index.html`, set `SUPABASE_URL`, `SUPABASE_KEY` (the publishable/anon key) and `ADMIN_EMAIL` (the email from step 2). Never use the `service_role` or secret key here.
 4. **GitHub Pages:** in the repo, go to Settings > Pages, choose "Deploy from a branch", branch `main`, folder `/(root)`.
@@ -57,7 +61,7 @@ The image is available at:
 
 `https://su-innovation-lab.github.io/Innovation-Lab-Events/Lab-Desktop.jpg`
 
-- It's a 1920x1080 screenshot of `?display=1`, a layout with no header or buttons: the current notice, the Up Next event, and the next four events.
+- It's a 1920x1080 screenshot of `?display=1`, a layout with no header or buttons: the banner message, the Up Next event, the pinned Important event, a compact list of upcoming events on the left, and an Ongoing Events panel on the right showing your newest Interest Form fliers (or editable text when there are none).
 - It refreshes hourly, though GitHub may start scheduled runs 5 to 20 minutes late. After an edit, run it manually from Actions > Update lab screen image > Run workflow.
 - IT can set it as the desktop background with a scheduled task that downloads the image. The task needs to run on the logged-in user's account.
 - Screens that can show a web page can use `https://su-innovation-lab.github.io/Innovation-Lab-Events/?display=1` directly, which is always live.
@@ -65,7 +69,7 @@ The image is available at:
 ## Maintenance
 
 - **Change the admin password:** Supabase dashboard > Authentication > Users. No code change needed.
-- **Change the PCB Club banner:** edit the `NOTICE` line at the top of the script in `index.html`.
+- **Change the banner message** (for example the PCB Club reminder): log in and use the **Lab screen** tab.
 - **Change the months shown:** the calendar and date picker are set to October and November 2026 in `index.html`.
 - **Hourly screenshots:** to run once a day instead, change the cron line in `.github/workflows/screenshot.yml` to `"0 14 * * *"`.
 - **Free tier limits:** Supabase pauses free projects after about a week with no activity (use Restore project if the site shows an error). GitHub pauses scheduled jobs on repos with 60 days of no activity (re-enable in the Actions tab).
