@@ -6,7 +6,7 @@ A live events calendar for the Seattle University Innovation Lab, hosted free on
 
 ## Features
 
-- **Up Next (home page):** the next event is shown large with its flier, followed by upcoming events and past events.
+- **Up Next (home page):** the next event is shown large with its flier, plus an **Important** panel beside it for an event an admin pins by hand (Pin/Unpin on the Add event tab). Upcoming and past events follow.
 - **Calendar:** October and November 2026, with clickable events.
 - **Interest Forms:** a page of fliers for interest forms (not events).
 - **Admin login:** top right. Logged-in staff can add, edit and delete events, upload PNG or JPG fliers from a phone or computer, and add or remove interest form fliers.
@@ -32,11 +32,12 @@ screenshot.js                    Takes the wallpaper screenshot
 Lab-Desktop.jpg                  Generated image (do not edit by hand)
 setup.sql                        One-time database setup (events + fliers)
 setup_interest_forms.sql         One-time database setup (interest forms)
+setup_featured.sql               One-time database setup (Important/pinned event)
 ```
 
 ## Setup from scratch
 
-1. **Supabase:** create a free project. In SQL Editor, run `setup.sql`, then `setup_interest_forms.sql`.
+1. **Supabase:** create a free project. In SQL Editor, run `setup.sql`, `setup_interest_forms.sql` and `setup_featured.sql`.
 2. **Admin account:** in Authentication > Users, add one user (auto confirm) with the email and password the staff will use. In Authentication > Sign In / Providers, turn **off** "Allow new users to sign up".
 3. **Configure the site:** at the top of the script in `index.html`, set `SUPABASE_URL`, `SUPABASE_KEY` (the publishable/anon key) and `ADMIN_EMAIL` (the email from step 2). Never use the `service_role` or secret key here.
 4. **GitHub Pages:** in the repo, go to Settings > Pages, choose "Deploy from a branch", branch `main`, folder `/(root)`.
