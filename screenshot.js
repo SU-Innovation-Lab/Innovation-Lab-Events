@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
   });
   const page = await ctx.newPage();
   await page.goto("https://su-innovation-lab.github.io/Innovation-Lab-Events/?display=1", { waitUntil: "networkidle" });
-  await page.waitForSelector(".hero");
+  await page.waitForSelector(".dgrid");
   await page.waitForFunction(() => [...document.images].every(i => i.complete));
   await page.screenshot({ path: "Lab-Desktop.jpg", type: "jpeg", quality: 90 });
   await browser.close();
