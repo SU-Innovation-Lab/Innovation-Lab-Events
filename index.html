@@ -186,10 +186,11 @@ const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m
 const timeStr=e=>e.timeText||(e.start?fmtT(e.start)+(e.end?" \u2013 "+fmtT(e.end):""):"TBD");
 const fmtD=e=>new Date(e.date+"T00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
 const st=e=>new Date(e.date+"T"+(e.start||"00:00"));
-const en=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
+const en=e=>new Date(e.date+"T23:59:59");
+const realEnd=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
 const sorted=()=>[...EV].sort((a,b)=>(a.date+(a.start||"99")).localeCompare(b.date+(b.start||"99")));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-function lbl(e){const n=new Date();if(st(e)<=n&&n<=en(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
+function lbl(e){const n=new Date();if(st(e)<=n&&n<=realEnd(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
 const toast=m=>{const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2600)};
 const tag=e=>`<span class="tag">${esc(e.lead)}</span>${e.hidden?'<span class="hid">Hidden</span>':""}`;
 const card=e=>`<button class="card${e.flier?" has":""}" data-open="${e.id}">${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}<span class="t">${tag(e)}<b>${esc(e.title)}</b><small>${fmtD(e)} · ${esc(timeStr(e))}</small><small>${esc(e.location)}</small></span></button>`;
