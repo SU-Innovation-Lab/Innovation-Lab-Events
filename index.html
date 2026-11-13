@@ -186,11 +186,11 @@ const fmtT=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m
 const timeStr=e=>e.timeText||(e.start?fmtT(e.start)+(e.end?" \u2013 "+fmtT(e.end):""):"TBD");
 const fmtD=e=>new Date(e.date+"T00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
 const st=e=>new Date(e.date+"T"+(e.start||"00:00"));
-const en=e=>new Date(e.date+"T23:59:59");
-const realEnd=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
+const eod=e=>new Date(e.date+"T23:59:59");
+const en=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
 const sorted=()=>[...EV].sort((a,b)=>(a.date+(a.start||"99")).localeCompare(b.date+(b.start||"99")));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-function lbl(e){const n=new Date();if(st(e)<=n&&n<=realEnd(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
+function lbl(e){const n=new Date();if(st(e)<=n&&n<=en(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
 const toast=m=>{const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2600)};
 const tag=e=>`<span class="tag">${esc(e.lead)}</span>${e.hidden?'<span class="hid">Hidden</span>':""}`;
 const card=e=>`<button class="card${e.flier?" has":""}" data-open="${e.id}">${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}<span class="t">${tag(e)}<b>${esc(e.title)}</b><small>${fmtD(e)} · ${esc(timeStr(e))}</small><small>${esc(e.location)}</small></span></button>`;
@@ -208,14 +208,14 @@ async function saveEv(o,old){
 
 const hero=(e,label,alt)=>`<section class="hero${e.flier?"":" noimg"}${alt?" imp":""}">${e.flier?`<img src="${esc(e.flier)}" alt="Flier for ${esc(e.title)}" data-open="${e.id}">`:""}<div class="in"><span class="pill${alt?" alt":""}">${label}</span><h2>${esc(e.title)}</h2>${tag(e)}<div class="meta"><div>${fmtD(e)}</div><div>${esc(timeStr(e))}</div><div>${esc(e.location)}</div></div><div class="row"><button class="btn pri" data-open="${e.id}">View details</button></div></div></section>`;
 function viewUp(){
-  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n).reverse(),nx=up[0],imp=EV.find(e=>e.featured&&en(e)>=n),rest=up.slice(1);
+  const all=sorted(),n=new Date(),up=all.filter(e=>en(e)>=n),past=all.filter(e=>en(e)<n&&!(e.featured&&eod(e)>=n)).reverse(),nx=up[0],imp=EV.find(e=>e.featured&&eod(e)>=n),rest=up.filter(e=>e!==nx&&e!==imp);
   let h=nx?`<div class="spotrow${imp?" two":""}">${hero(nx,"Up next · "+lbl(nx))}${imp?hero(imp,"\u2605 Important · "+lbl(imp),1):""}</div>`:`<section class="hero noimg"><div class="in"><h2>No upcoming events</h2><span class="sub">Check back soon.</span></div></section>`;
   if(rest.length)h+=`<h3>Coming up</h3><div class="grid">${rest.slice(0,DISPLAY?8:undefined).map(card).join("")}</div>`;
   if(past.length&&!DISPLAY)h+=`<h3>Past events</h3><div class="grid past">${past.map(card).join("")}</div>`;
   return h}
 const mini=e=>{const d=new Date(e.date+"T00:00");return`<div class="mini"><div class="dt"><b>${d.getDate()}</b><span>${d.toLocaleString("en-US",{month:"short"})}</span></div><div class="mt"><b>${esc(e.title)}</b><small>${esc(timeStr(e))} · ${esc(e.location)}</small></div>${e.flier?`<img src="${esc(e.flier)}" alt="">`:""}</div>`};
 function viewDisplay(){
-  const n=new Date(),up=sorted().filter(e=>!e.hidden&&en(e)>=n),nx=up[0],imp=EV.find(e=>!e.hidden&&e.featured&&en(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
+  const n=new Date(),up=sorted().filter(e=>!e.hidden&&en(e)>=n),nx=up[0],imp=EV.find(e=>!e.hidden&&e.featured&&eod(e)>=n),same=imp&&nx&&imp.id===nx.id,rest=up.filter(e=>e!==nx&&e!==imp).slice(0,9);
   const spot=!nx?`<div class="spotrow"><section class="hero noimg"><div class="in"><h2>No upcoming events</h2></div></section></div>`
     :same?`<div class="spotrow">${hero(imp,"\u2605 Important · Up next · "+lbl(imp),1)}</div>`
     :imp?`<div class="spotrow two">${hero(imp,"\u2605 Important · "+lbl(imp),1)}${hero(nx,"Up next · "+lbl(nx))}</div>`
