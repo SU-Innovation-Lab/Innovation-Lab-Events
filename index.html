@@ -7,7 +7,7 @@
 <style>
 :root{--ink:#fff;--mut:#b5b5b5;--bg:#000;--panel:#121212;--line:#2c2c2c;--red:#c8102e;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Inter","Segoe UI",system-ui,-apple-system,sans-serif}
 button,input{font:inherit}
 header{background:#000;color:#fff;display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap;border-bottom:3px solid var(--red)}
 header h1{font-size:18px;margin:0;font-weight:700}
@@ -151,6 +151,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 .form .chk input{width:18px;height:18px;padding:0;flex:none}
 .li .btn{padding:6px 10px;font-size:14px}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -187,7 +188,7 @@ const timeStr=e=>e.timeText||(e.start?fmtT(e.start)+(e.end?" \u2013 "+fmtT(e.end
 const fmtD=e=>new Date(e.date+"T00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
 const st=e=>new Date(e.date+"T"+(e.start||"00:00"));
 const eod=e=>new Date(e.date+"T23:59:59");
-const en=e=>e.end?new Date(e.date+"T"+e.end):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
+const en=e=>e.end?new Date(e.date+"T"+e.end):e.timeText&&e.timeText.trim()?eod(e):e.start?new Date(+st(e)+36e5):new Date(e.date+"T23:59:59");
 const sorted=()=>[...EV].sort((a,b)=>(a.date+(a.start||"99")).localeCompare(b.date+(b.start||"99")));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 function lbl(e){const n=new Date();if(st(e)<=n&&n<=en(e))return"Happening now";const z=new Date();z.setHours(0,0,0,0);const d=Math.round((new Date(e.date+"T00:00")-z)/864e5);return d===0?"Today":d===1?"Tomorrow":"In "+d+" days"}
