@@ -7,9 +7,10 @@ const { chromium } = require("playwright");
     locale: "en-US",
   });
   const page = await ctx.newPage();
-  await page.goto("https://su-innovation-lab.github.io/Innovation-Lab-Events/?display=1", { waitUntil: "networkidle" });
+  await page.goto("https://su-innovation-lab.github.io/Innovation-Lab-Events/?display=1&t=" + Date.now(), { waitUntil: "networkidle" });
   await page.waitForSelector(".dgrid");
   await page.waitForFunction(() => [...document.images].every(i => i.complete));
+  await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: "Lab-Desktop.jpg", type: "jpeg", quality: 90 });
   await browser.close();
 })();
